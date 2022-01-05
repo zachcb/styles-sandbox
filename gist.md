@@ -1,16 +1,23 @@
 # RFC: Style changes proposal
 
+### Live demo
+
+A simple web app demonstrating the ideas to follow is available [here](https://wlewis-formative.github.io/styles-sandbox/), and the source can be found [here](https://github.com/wlewis-formative/styles-sandbox/tree/wjl-rfc).
+
+## Abstract
+
 This RFC contains a couple of ideas intended to resolve the issues discussed at [this meeting](https://meet.range.co/goformative/dev-sync/43/mqkPxUfLRI4SjldH6yNCzZVL2S91wfdt6wwzQxP4eSw=).
+The three themes are
 
-## Live demo
-
-A simple web app demonstrating the ideas to follow is available at [here](https://wlewis-formative.github.io/styles-sandbox/), and the source can be found [here](https://github.com/wlewis-formative/styles-sandbox/tree/wjl-rfc).
+1. Decoupling names from values
+2. Using `css` and TypeScript functions to create mixins
+3. Hacking CSS variables to allow for theming
 
 ## More abstract ("semantic") names
 
 Values used in CSS declarations will be organized in a map.
 Names should be as abstract as possible: prefer `warning` to `red` and `accent` to `lightBlue`.
-The resulting map will resemble:
+The resulting map might look something like this:
 
 ```typescript
 const vars = {
