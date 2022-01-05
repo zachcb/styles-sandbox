@@ -1,6 +1,7 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 import Header from './Header';
+import TextViewer from './TextViewer';
 import { vars } from './styles';
 import { ButtonBase, PaddingMain } from './mixins';
 
@@ -18,6 +19,7 @@ const ContentDiv = styled.div`
   ${PaddingMain}
   box-sizing: border-box;
   flex-grow: 1;
+  overflow: auto;
   width: 100%;
 `;
 
@@ -42,6 +44,11 @@ const WarningButton = styled.button`
   ${NavButtonMargin}
 `;
 
+const TextViewerContainerDiv = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
 const App: React.VFC = () => {
   return (
     <StyledArticle>
@@ -56,6 +63,23 @@ const App: React.VFC = () => {
           <WarningButton>Warning</WarningButton>
           <WarningButton disabled>Warning [Disabled]</WarningButton>
         </nav>
+
+        <TextViewerContainerDiv>
+          <TextViewer
+            title="Generated theme declarations"
+            subtitle="See src/styles/genCssDecls.ts"
+            text={require('./styles/genCssDecls').default()}
+          />
+          <TextViewer
+            title="Generated `colors` object"
+            subtitle="See src/styles/genColors.ts"
+            text={JSON.stringify(
+              require('./styles/genColors').default(),
+              null,
+              2
+            )}
+          />
+        </TextViewerContainerDiv>
       </ContentDiv>
     </StyledArticle>
   );

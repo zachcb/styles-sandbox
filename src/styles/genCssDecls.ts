@@ -20,17 +20,18 @@ export default function genCssDecls(): string {
       if (themeName === 'default') {
         return genVarDecls(values);
       } else {
-        return `&.${themeName} { ${genVarDecls(values)} }`;
+        return `&.${themeName} {\n${genVarDecls(values, 1)}\n}`;
       }
     })
-    .join('');
-  // Uncomment to see output:
-  // console.log(decls);
+    .join('\n\n');
   return decls;
 }
 
-function genVarDecls(values: { [name: string]: string }): string {
+function genVarDecls(values: { [name: string]: string }, level = 0): string {
+  // For pretty-printing.
+  const indent = ' '.repeat(level * 2);
+
   return Object.entries(values)
-    .map(([name, value]) => `--${name}: ${value};`)
-    .join('');
+    .map(([name, value]) => `${indent}--${name}: ${value};`)
+    .join('\n');
 }

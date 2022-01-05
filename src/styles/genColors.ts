@@ -36,8 +36,6 @@ export default function genColors(): ThemeColors {
     }),
     {}
   ) as ThemeColors;
-  // Uncomment to see output:
-  // console.log(colors);
   return colors;
 }
 

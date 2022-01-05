@@ -9,6 +9,7 @@ const StyledDiv = styled.div`
   background-color: ${vars.colors.bgAccent};
   box-sizing: border-box;
   display: flex;
+  flex-shrink: 0;
   height: ${vars.layout.headerHeightPx};
   justify-content: space-between;
   width: 100%;
