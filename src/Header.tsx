@@ -1,16 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ThemeContext, vars } from './styles';
-import { ButtonBase, PaddingMain } from './mixins';
+import { ThemeContext } from './styles';
+import { ButtonBase } from './components/common/Button/styles/ButtonBase';
 
 const StyledDiv = styled.div`
-  ${PaddingMain}
+  @apply --padding-main;
   align-items: center;
-  background-color: ${vars.colors.bgAccent};
+  background-color: ${props => props.theme.colors.bgAccent};
   box-sizing: border-box;
   display: flex;
   flex-shrink: 0;
-  height: ${vars.layout.headerHeightPx};
+  height: ${props => props.theme.layout.headerHeightPx};
   justify-content: space-between;
   width: 100%;
 `;
@@ -21,7 +21,7 @@ const StyledH1 = styled.h1`
 `;
 
 const ToggleThemeButton = styled.button`
-  ${ButtonBase()}
+  ${ButtonBase({})}
 `;
 
 const Header: React.VFC = () => {

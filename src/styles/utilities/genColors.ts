@@ -1,4 +1,4 @@
-import themes from './themes';
+import themes from "../themes/themes";
 
 /**
  * Generates values for the color names using the `default` theme as a template.
@@ -26,10 +26,10 @@ import themes from './themes';
  * Thus, the `default` theme determines what names will be recognized as valid
  * by TypeScript.
  */
-type ThemeColors = Record<keyof typeof themes.default, string>;
+type ThemeColors = Record<keyof typeof themes[theme], string>;
 
 export default function genColors(): ThemeColors {
-  const colors = Object.keys(themes.default).reduce(
+  const colors = Object.keys(themes[theme]).reduce(
     (acc, key) => ({
       ...acc,
       [key]: toCssVarUse(key),

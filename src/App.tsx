@@ -2,46 +2,25 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 import Header from './Header';
 import TextViewer from './TextViewer';
-import { vars } from './styles';
-import { ButtonBase, PaddingMain } from './mixins';
+import { Button } from "./components/common/Button/Button"
+import DefaultLayout from './components/layouts/DefaultLayout';
 
 const StyledArticle = styled.article`
-  background-color: ${vars.colors.bg};
-  color: ${vars.colors.primary};
+  background-color: ${props => props.theme.colors.bg};
+  color: ${props => props.theme.colors.primary};
   display: flex;
   flex-direction: column;
-  font-family: ${vars.typography.fontFamilyPrimary};
+  font-family: ${props => props.theme.typography.fontFamilyPrimary};
   height: 100%;
   width: 100%;
 `;
 
 const ContentDiv = styled.div`
-  ${PaddingMain}
+  @apply --padding-main;
   box-sizing: border-box;
   flex-grow: 1;
   overflow: auto;
   width: 100%;
-`;
-
-const NavButtonMargin = css`
-  margin-right: 10px;
-  :last-child {
-    margin-right: unset;
-  }
-`;
-
-const PrimaryButton = styled.button`
-  ${ButtonBase()}
-  ${NavButtonMargin}
-`;
-
-const WarningButton = styled.button`
-  ${ButtonBase({
-    bg: vars.colors.warning,
-    hoverBg: vars.colors.warningAccent,
-    disabledBg: vars.colors.warningAccent1,
-  })}
-  ${NavButtonMargin}
 `;
 
 const TextViewerContainerDiv = styled.div`
@@ -49,39 +28,51 @@ const TextViewerContainerDiv = styled.div`
   flex-direction: column;
 `;
 
+const Nav = styled.nav`
+  ${Button.selector} {
+    margin-right: 10px;
+
+    :last-child {
+      margin-right: unset;
+    }
+  }
+`;
+
 const App: React.VFC = () => {
   return (
-    <StyledArticle>
-      <Header />
+    <DefaultLayout>
+      <StyledArticle>
+        <Header />
 
-      <ContentDiv>
-        <h1>Welcome</h1>
-        <p>This is a test</p>
+        <ContentDiv>
+          <h1>Welcome</h1>
+          <p>This is a test</p>
 
-        <nav>
-          <PrimaryButton>Primary</PrimaryButton>
-          <WarningButton>Warning</WarningButton>
-          <WarningButton disabled>Warning [Disabled]</WarningButton>
-        </nav>
+          <Nav>
+            <Button primary>Primary</Button>
+            <Button warning>Warning</Button>
+            <Button warning disabled>Warning [Disabled]</Button>
+          </Nav>
 
-        <TextViewerContainerDiv>
-          <TextViewer
-            title="Generated theme declarations"
-            subtitle="See src/styles/genCssDecls.ts"
-            text={require('./styles/genCssDecls').default()}
-          />
-          <TextViewer
-            title="Generated `colors` object"
-            subtitle="See src/styles/genColors.ts"
-            text={JSON.stringify(
-              require('./styles/genColors').default(),
-              null,
-              2
-            )}
-          />
-        </TextViewerContainerDiv>
-      </ContentDiv>
-    </StyledArticle>
+          <TextViewerContainerDiv>
+            <TextViewer
+              title="Generated theme declarations"
+              subtitle="See src/styles/genCssDecls.ts"
+              text={require('./styles/genCssDecls').default()}
+            />
+            <TextViewer
+              title="Generated `colors` object"
+              subtitle="See src/styles/genColors.ts"
+              text={JSON.stringify(
+                require('./styles/genColors').default(),
+                null,
+                2
+              )}
+            />
+          </TextViewerContainerDiv>
+        </ContentDiv>
+      </StyledArticle>
+    </DefaultLayout>
   );
 };
 
