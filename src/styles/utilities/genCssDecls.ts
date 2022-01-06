@@ -1,5 +1,5 @@
-import themes from "./themes/themes";
-
+import { themes } from "../themes/themes";
+import { getNestedPairs } from "./getNestedPairs";
 /**
  * Generates appropriate CSS variable declarations for each theme. That is, for every
  * theme named '<theme>', we generate a substring:
@@ -14,16 +14,13 @@ import themes from "./themes/themes";
  *
  * Note the special handling of the `default` theme.
  */
-export default function genCssDecls(): string {
-  const decls = Object.entries(themes)
+export default function genCssDecls(values = themes): string {
+  const decls = Object.entries(values)
     .map(([themeName, values]) => {
-      if (themeName === "default") {
-        return genVarDecls(values);
-      } else {
-        return `&.${themeName} {\n${genVarDecls(values, 1)}\n}`;
-      }
+      return `&.${themeName} {\n${genVarDecls(values as any, 1)}\n}`;
     })
     .join("\n\n");
+
   return decls;
 }
 
@@ -31,7 +28,9 @@ function genVarDecls(values: { [name: string]: string }, level = 0): string {
   // For pretty-printing.
   const indent = " ".repeat(level * 2);
 
-  return Object.entries(values)
-    .map(([name, value]) => `${indent}--${name}: ${value};`)
+  return Object.entries(getNestedPairs(values))
+    .map(([name, value]) => {
+      return `${indent}--${name}: ${value}`;
+    })
     .join("\n");
 }

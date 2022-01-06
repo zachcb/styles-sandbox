@@ -1,5 +1,5 @@
 
-import { css, useTheme } from 'styled-components';
+import { css } from 'styled-components';
 import theme from 'styled-theming';
 
 export interface ButtonBaseProps {
@@ -9,7 +9,6 @@ export interface ButtonBaseProps {
   disabledBg?: string;
 }
 
-const theme = useTheme()
 
 const backgroundColor = theme.variants("mode", "kind", {
   default: {

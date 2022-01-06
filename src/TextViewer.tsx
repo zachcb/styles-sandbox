@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { vars } from './styles';
 
 interface TextViewerProps {
   title: string;
@@ -9,11 +8,11 @@ interface TextViewerProps {
 }
 
 const StyledDiv = styled.div`
-  background-color: ${vars.colors.primary};
-  border-radius: ${vars.layout.borderRadiusMdPx};
-  color: ${vars.colors.bg};
+  background-color: ${props => props.theme.colors.primary};
+  border-radius: ${props => props.theme.layout.borderRadiusMdPx};
+  color: ${props => props.theme.colors.bg};
   display: inline-block;
-  font-family: ${vars.typography.fontFamilyPrimary};
+  font-family: ${props => props.theme.typography.fontFamilyPrimary};
   padding: 10px;
   margin: 20px 0;
 `;
@@ -35,7 +34,7 @@ const StyledH2 = styled.h2`
 `;
 
 const StyledPre = styled.pre`
-  font-family: ${vars.typography.fontFamilyPrimary};
+  font-family: ${props => props.theme.typography.fontFamilyPrimary};
   margin: 0;
   margin-top: 15px;
 `;

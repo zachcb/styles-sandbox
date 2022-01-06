@@ -1,15 +1,16 @@
 export const layout = {
-  default: {
-    padding: {
-      main: "20px",
+  padding: {
+    main: "20px",
+  },
+  border: {
+    radius: {
+      xs: "1px",
+      sm: "2px",
+      md: "3px",
+      full: "50%",
     },
-    border: {
-      radius: {
-        md: "3px",
-      },
-    },
-    header: {
-      height: "60px",
-    },
+  },
+  header: {
+    height: "60px",
   },
 };

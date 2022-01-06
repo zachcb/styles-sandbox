@@ -17,16 +17,16 @@ export const Button = ({ children, ...context }: ButtonProps): ReactElement => {
   const type = link ? 'a' : 'button'
 
   if (primary) {
-    return <PrimaryButton as={type} {...context}></PrimaryButton>;
+    return <PrimaryButton as={type} {...context}>{children}</PrimaryButton>;
   }
 
   if (warning) {
-    return <WarningButton as={type} {...context}></WarningButton>
+    return <WarningButton as={type} {...context}>{children}</WarningButton>
   }
 
 
   return (
-    <DefaultButton as={type} {...context}></DefaultButton>
+    <DefaultButton as={type} {...context}>{children}</DefaultButton>
   )
 }
 

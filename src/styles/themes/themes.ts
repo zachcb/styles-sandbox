@@ -10,6 +10,7 @@ import { layout } from "./layout";
  * NOTE I'm not satisfied with the color names I've chosen here. This is a WIP.
  */
 const darkTheme: DefaultTheme = {
+  type: "dark",
   colors: {
     bg: "#282828",
     bgAccent: "#3c3836",
@@ -21,9 +22,12 @@ const darkTheme: DefaultTheme = {
     warningAccent: "#fe8019",
     warningAccent1: "#e0853a",
   },
+  typography,
+  layout,
 };
 
 const lightTheme: DefaultTheme = {
+  type: "light",
   colors: {
     bg: "#fbf1c7",
     bgAccent: "#ebdbb2",
@@ -35,25 +39,29 @@ const lightTheme: DefaultTheme = {
     warningAccent1: "#e86c5d",
 
     // Alernative way
-    button: {
-      primary: {
-        bg: "#fbf1c7",
-        text: "#282828",
-      },
-      warning: {
-        bg: "#fbf1c7",
-        text: "#282828",
-      },
-    },
+    // button: {
+    //   primary: {
+    //     bg: "#fbf1c7",
+    //     text: "#282828",
+    //   },
+    //   warning: {
+    //     bg: "#fbf1c7",
+    //     text: "#282828",
+    //   },
+    // },
   },
+  typography,
+  layout,
 };
 
-const theme = (target = {}) => ({
-  ...[{ dark: darkTheme }, { light: lightTheme }].map((theme) => ({
-    ...theme,
-    ...typography,
-    ...layout,
-  })),
-});
+export interface Theme {
+  type: string;
+  colors: { [key in keyof typeof lightTheme]: string };
+  typography: { [key in keyof typeof typography]: string };
+  layout: { [key in keyof typeof layout]: string };
+}
 
-export default theme;
+export const themes = {
+  light: lightTheme,
+  dark: darkTheme,
+};
