@@ -52,6 +52,7 @@ const App: React.VFC = () => {
           <Button primary>Primary</Button>
           <Button warning>Warning</Button>
           <Button warning disabled>Warning [Disabled]</Button>
+          <Button warning link="/">Warning Link</Button>
         </Nav>
 
         <TextViewerContainerDiv>
