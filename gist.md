@@ -1,8 +1,24 @@
 # RFC: Style changes proposal
 
+## This is a revision of Will's proposal
+
+### [Original Proposal](https://gist.github.com/wlewis-formative/21210ff4378446cf124441c6e14b1f6e)
+
+Changes from Original
+
+- Uses [createGlobalStyle](https://github.com/zachcb/styles-sandbox/blob/main/src/styles/GlobalStyles.ts) to add CSS variables to the styles
+- Uses Styled Components's `ThemeProvider` to allow the theme to be sent through Styled's props
+  - This also allows for [nested themes](https://github.com/zachcb/styles-sandbox/blob/main/src/components/layouts/DefaultLayout.tsx).
+- Added a [getNestedPairs](https://github.com/zachcb/styles-sandbox/blob/main/src/styles/utilities/getNestedPairs.ts) to allow for nested values in the theme. (Example: `--layout-border-radius-xs`)
+- Separated [Button's controls into booleans](https://github.com/zachcb/styles-sandbox/blob/main/src/App.tsx#L52) rather than individual components
+- Button uses `as` to specify if the button is an Anchor
+- Not being used, but `Styled-Theming` was added to allow for easier theme mode control
+
+---
+
 ### Live demo
 
-A simple web app demonstrating the ideas to follow is available [here](https://wlewis-formative.github.io/styles-sandbox/), and the source can be found [here](https://github.com/wlewis-formative/styles-sandbox/tree/wjl-rfc).
+A simple web app demonstrating the ideas to follow is available [here](https://zachcb.github.io/styles-sandbox/), and the source can be found [here](https://github.com/zachcb/styles-sandbox).
 
 ## Abstract
 
@@ -11,7 +27,8 @@ The three themes are
 
 1. Decoupling names from values
 2. Using `css` and TypeScript functions to create mixins
-3. Hacking CSS variables to allow for theming
+3. Hacking CSS variables to allow for more flexibility
+4. Utilizing Styled Components to handle theming
 
 ## More abstract ("semantic") names
 
@@ -20,37 +37,32 @@ Names should be as abstract as possible: prefer `warning` to `red` and `accent` 
 The resulting map might look something like this:
 
 ```typescript
-const vars = {
+const lightTheme: DefaultTheme = {
+  type: "light",
   colors: {
-    bg: '#fbf1c7',
-    bgAccent: '#ebdbb2',
-    primary: '#282828',
-    accent: '#665c54',
-    warning: '#cc241d',
-    warningAccent: '#fb4934',
-    warningDisabled: '#a12b27',
-    success: '#b8bb26',
+    bg: "#fbf1c7",
+    bgAccent: "#ebdbb2",
+    primary: "#282828",
+    primaryAccent: "#665c54",
+    primaryAccent1: "#928374",
+    warning: "#cc241d",
+    warningAccent: "#fb4934",
+    warningAccent1: "#e86c5d",
   },
-  layout: {
-    paddingMainPx: '20px',
-    borderRadiusMdPx: '3px',
-    headerHeightPx: '60px',
-  },
-  typography: {
-    fontFamilyPrimary: '"Fira Code", monospace',
-  },
+  typography,
+  layout,
 };
 ```
 
 This is essentially our current `globalStyles` object, and it's used in exactly the same way:
 
 ```typescript
-import { vars } from './styles';
+import { vars } from "./styles";
 
 const WarningButton = styled.button`
-  background-color: ${vars.colors.warning};
-  border-radius: ${vars.layout.borderRadiusMdPx};
-  color: ${vars.colors.bg};
+  background-color: ${(props) => props.theme.colors.warning};
+  border-radius: ${(props) => props.theme.layout.borderRadiusMdPx};
+  color: ${(props) => props.theme.colors.bg};
   // ...
 `;
 ```
@@ -68,30 +80,30 @@ Suppose we have two button components that share many of the same styles:
 
 ```typescript
 const PrimaryButton = styled.button`
-  background-color: ${vars.colors.primary};
+  background-color: ${(props) => props.theme.colors.primary};
   border: none;
-  border-radius: ${vars.layout.borderRadiusMdPx};
+  border-radius: ${(props) => props.theme.layout.borderRadiusMdPx};
   cursor: pointer;
   padding: 0.2em 0.4em;
-  color: ${vars.colors.bg};
+  color: ${(props) => props.theme.colors.bg};
   margin: 0;
 
   :hover {
-    background-color: ${vars.colors.primaryAccent};
+    background-color: ${(props) => props.theme.colors.primaryAccent};
   }
 `;
 
 const WarningButton = styled.button`
-  background-color: ${vars.colors.warning};
+  background-color: ${(props) => props.theme.colors.warning};
   border: none;
-  border-radius: ${vars.layout.borderRadiusMdPx};
+  border-radius: ${(props) => props.theme.layout.borderRadiusMdPx};
   cursor: pointer;
   padding: 0.2em 0.4em;
-  color: ${vars.colors.bg};
+  color: ${(props) => props.theme.colors.bg};
   margin: 0;
 
   :hover {
-    background-color: ${vars.colors.warningAccent};
+    background-color: ${(props) => props.theme.colors.warningAccent};
   }
 `;
 ```
@@ -100,14 +112,14 @@ We'd like to "bottle up" the common pieces into an abstraction that we can share
 To do so, we can leverage the `css` export from `styled-components`:
 
 ```typescript
-import { css } from 'styled-components';
+import { css } from "styled-components";
 
 const ButtonBase = css`
   border: none;
-  border-radius: ${vars.layout.borderRadiusMdPx};
+  border-radius: ${(props) => props.theme.layout.borderRadiusMdPx};
   cursor: pointer;
   padding: 0.2em 0.4em;
-  color: ${vars.colors.bg};
+  color: ${(props) => props.theme.colors.bg};
   margin: 0;
 `;
 
@@ -117,23 +129,23 @@ export default ButtonBase;
 Our new definitions are then significantly shortened:
 
 ```typescript
-import ButtonBase from './ButtonBase';
+import ButtonBase from "./ButtonBase";
 
 const PrimaryButton = styled.button`
   ${ButtonBase}
-  background-color: ${vars.colors.primary};
+  background-color: ${(props) => props.theme.colors.primary};
 
   :hover {
-    background-color: ${vars.colors.primaryAccent};
+    background-color: ${(props) => props.theme.colors.primaryAccent};
   }
 `;
 
 const WarningButton = styled.button`
   ${ButtonBase}
-  background-color: ${vars.colors.warning};
+  background-color: ${(props) => props.theme.colors.warning};
 
   :hover {
-    background-color: ${vars.colors.warningAccent};
+    background-color: ${(props) => props.theme.colors.warningAccent};
   }
 `;
 ```
@@ -144,7 +156,7 @@ That is, each abstract style concept (like `ButtonBase`) should be "complete" in
 Luckily, parameterization is simple:
 
 ```typescript
-import { css } from 'styled-components';
+import { css } from "styled-components";
 
 export interface ButtonBaseProps {
   bg: string;
@@ -154,19 +166,21 @@ export interface ButtonBaseProps {
 const ButtonBase = (props: ButtonBaseProps) => css`
   background-color: ${props.bg};
   border: none;
-  border-radius: ${vars.layout.borderRadiusMdPx};
+  border-radius: ${(props) => props.theme.layout.border.radius.md};
   cursor: pointer;
   padding: 0.2em 0.4em;
-  color: ${vars.colors.bg};
+  color: ${(props) => props.theme.colors.bg};
   margin: 0;
 
   // Supporting optional props is straightforward, if a little verbose.
   // A function could help here.
-  ${props.bgHover ? `
+  ${props.bgHover
+    ? `
   :hover {
     background-color: ${props.bgHover};
   }
-  ` : ''}
+  `
+    : ""}
 `;
 
 export default ButtonBase;
@@ -175,14 +189,22 @@ export default ButtonBase;
 This new `ButtonBase` _function_ is used like so:
 
 ```typescript
-import ButtonBase from './ButtonBase';
+import ButtonBase from "./ButtonBase";
 
 const PrimaryButton = styled.button`
-  ${ButtonBase({ bg: vars.colors.primary, bgHover: vars.colors.primaryAccent })}
+  ${(props) =>
+    ButtonBase({
+      bg: props.theme.colors.primary,
+      bgHover: props.theme.colors.primaryAccent,
+    })}
 `;
 
 const WarningButton = styled.button`
-  ${ButtonBase({ bg: vars.colors.primary, bgHover: vars.colors.warningAccent })}
+  ${(props) =>
+    ButtonBase({
+      bg: props.theme.colors.primary,
+      bgHover: props.theme.colors.warningAccent,
+    })}
 `;
 ```
 
@@ -191,27 +213,26 @@ We can still _override_ certain attribute styles, but we no longer need to provi
 Lastly, these mixins can be freely composed in order to combine several concepts:
 
 ```typescript
-import { css } from 'styled-components';
+import { css } from "styled-components";
 
 const Rounded = css`
-  border-radius: ${vars.layout.borderRadiusMdPx};
+  border-radius: ${(props) => props.theme.layout.borderRadiusMdPx};
 `;
 
 const Shadowed = css`
-  box-shadow: ${vars.layout.boxShadowD2};
+  box-shadow: ${(props) => props.theme.layout.boxShadowD2};
 `;
 ```
 
 ```typescript
-import { css } from 'styled-components';
-import { Rounded, Shadowed } from './style-utils';
+import { css } from "styled-components";
+import { Rounded, Shadowed } from "./style-utils";
 
 // ...
 
 const ButtonBase = (props: ButtonBaseProps) => css`
   ${Rounded}
-  ${Shadowed}
-  // ...
+  ${Shadowed} // ...
 `;
 ```
 
@@ -225,14 +246,20 @@ One option is to introduce a class name for each theme, set the class name on a 
 
 ```typescript
 const PrimaryButton = styled.button`
-  ${ButtonBase({ /* Default theme options */ })}
+  ${ButtonBase({
+    /* Default theme options */
+  })}
 
   .dark & {
-    ${ButtonBase({ /* Dark theme options */ })}
+    ${ButtonBase({
+      /* Dark theme options */
+    })}
   }
 
   .high-contrast & {
-    ${ButtonBase({ /* High contract options */ })}
+    ${ButtonBase({
+      /* High contract options */
+    })}
   }
 
   // ...
@@ -256,16 +283,18 @@ For simplicity's sake, let's suppose that only the colors change.
 Then the collection of themes should resemble:
 
 ```typescript
-const themes = {
-  dark: {
-    bg: '#ebdbb2',
-    // ...
+const lightTheme: DefaultTheme = {
+  colors: {
+    bg: "#fbf1c7",
+    ...
   },
-  highContrast: {
-    bg: '#000',
-    // ...
+};
+
+const darkTheme: DefaultTheme = {
+  colors: {
+    bg: "#282828",
+    ...
   },
-  // ...
 };
 ```
 
@@ -274,19 +303,19 @@ Then, in some parent component, we store the current theme as state, set an appr
 ```typescript
 // Declare CSS variables for each theme.
 const DeclDiv = styled.div`
-  --bg: ${vars.colors.bg};
-  --primary: ${vars.colors.primary};
+  --bg: ${(props) => props.theme.colors.bg};
+  --primary: ${(props) => props.theme.colors.primary};
   // ...
 
   &.dark {
-    --bg: ${themes.dark.bg};
-    --primary: ${themes.dark.primary};
+    --bg: ${(props) => props.themes.dark.bg};
+    --primary: ${(props) => props.themes.dark.primary};
     // ...
   }
 
   &.high-contrast {
-    --bg: ${themes.highContrast.bg};
-    --primary: ${themes.highContrast.primary};
+    --bg: ${(props) => props.themes.highContrast.bg};
+    --primary: ${(props) => props.themes.highContrast.primary};
     // ...
   }
 `;
@@ -295,11 +324,7 @@ const Themed: React.FC = ({ children }) => {
   // `null` indicates the default theme.
   const [theme, setTheme] = React.useState(null);
 
-  return (
-    <DeclDiv className={toCssClassName(theme)}>
-      {children}
-    </DeclDiv>
-  );
+  return <DeclDiv className={toCssClassName(theme)}>{children}</DeclDiv>;
 };
 ```
 
@@ -311,7 +336,7 @@ However, we're now forced to use CSS variables instead of the TypeScript names d
 ```typescript
 // ! This won't use the current theme's colors !
 const BadQuux = styled.div`
-  background-color: ${vars.colors.bg};
+  background-color: ${(props) => theme.colors.bg};
 `;
 
 const Quux = styled.div`
@@ -334,25 +359,25 @@ const themes = {
 };
 ```
 
-We then change `vars.colors` so that each name is bound to `var(--<name>)`:
+We then change `props => theme.colors` so that each name is bound to `var(--<name>)`:
 
 ```typescript
 const vars = {
   colors: {
-    bg: 'var(--bg)',
-    primary: 'var(--primary)',
-    primaryAccent: 'var(--primaryAccent)',
+    bg: "var(--bg)",
+    primary: "var(--primary)",
+    primaryAccent: "var(--primaryAccent)",
     // ...
   },
   // ...
-}
+};
 ```
 
 Now the following works as expected:
 
 ```typescript
 const Quux = styled.div`
-  background-color: ${vars.colors.bg};
+  background-color: ${(props) => theme.colors.bg};
 `;
 ```
 
@@ -364,13 +389,13 @@ const Quux = styled.div`
 `;
 ```
 
-Binding `vars.colors.bg` to `var(--bg)` may seem pointless: why not just cut our losses and use `var(--bg)`?
-However, by binding `vars.colors.bg` to `var(--bg)` (etc.) we recover all of the benefits of using TypeScript names: autocomplete and "existence" checking.
+Binding `props => theme.colors.bg` to `var(--bg)` may seem pointless: why not just cut our losses and use `var(--bg)`?
+However, by binding `props => theme.colors.bg` to `var(--bg)` (etc.) we recover all of the benefits of using TypeScript names: autocomplete and "existence" checking.
 Now, writing:
 
 ```typescript
 const Quux = styled.div`
-  background-color: ${vars.colors.badBg};
+  background-color: ${(props) => theme.colors.badBg};
 `;
 ```
 
@@ -384,5 +409,5 @@ const Quux = styled.div`
 
 fails silently.
 
-Both the declarations and "hacked" `vars.colors` values should be generated automatically.
+Both the declarations and "hacked" `props => theme.colors` values should be generated automatically.
 This lowers the API surface area to nearly what we're already accustomed to: the `vars` object and the `Themed` component.
